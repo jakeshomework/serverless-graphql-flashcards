@@ -45,7 +45,7 @@ functions:
     handler: handler.graphqlHandler
     events:
     - http:
-        path: graphql
+        path: graphqls
         method: post
         cors: true
   playground:
