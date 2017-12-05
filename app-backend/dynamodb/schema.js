@@ -1,6 +1,5 @@
 const schema = `
 
-
 type Deck {
   title: String! 
   author: String!
