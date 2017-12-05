@@ -37,8 +37,8 @@ custom:
     seed:
       test:
         sources:
-          - table: users
-            sources: [seed-data/users.json]
+          - table: decks-by-apollo
+            sources: [seed-data/decks.json]
 
 functions:
   graphql:
@@ -73,3 +73,20 @@ resources:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
         TableName: 'users'
+
+    DecksTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        KeySchema:
+          -
+            AttributeName: deckId
+            KeyType: HASH
+        AttributeDefinitions:
+          -
+            AttributeName: deckId
+            AttributeType: S
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+
+        TableName: 'decks-by-apollo'

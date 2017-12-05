@@ -1,4 +1,23 @@
 const schema = `
+
+
+type Deck {
+  title: String! 
+  author: String!
+  studySet: [Card]
+}
+
+type Card {
+  front: String!
+  back: String!
+  hint: String
+}
+
+type User {
+  name: String
+  email: String
+}
+
 type Tweets {   
   name: String!
   screen_name: String!
@@ -14,9 +33,10 @@ type Tweet {
   tweet : String
 }
 
-#returns list of Tweets
 type Query {
   getTwitterFeed(handle: String!, consumer_key: String, consumer_secret: String) : Tweets
+  getDeck(deckId: String!) : Deck
+  getUser(userId: String!) : User
 }`;
 
 // eslint-disable-next-line import/prefer-default-export

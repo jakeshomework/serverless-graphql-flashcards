@@ -55,9 +55,40 @@ const twitterEndpoint = {
     });
   },
 };
+
+const deckEndpoint = {
+  getDeck(args) {
+    console.log('args', args);
+    return promisify(callback =>
+      docClient.query(
+        {
+          TableName: 'decks-by-apollo',
+          KeyConditionExpression: 'deckId = :v1',
+          ExpressionAttributeValues: {
+            ':v1': args.deckId,
+          },
+        },
+        callback
+      )
+    ).then(result => {
+      console.log('result', result);
+
+      const deck = {
+        deckId: result.Items[0].deckId,
+        title: result.Items[0].title,
+        author: result.Items[0].author,
+        studySet: result.Items[0].studySet,
+      };
+
+      return deck;
+    });
+  },
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export const resolvers = {
   Query: {
     getTwitterFeed: (root, args) => twitterEndpoint.getRawTweets(args),
+    getDeck: (root, args) => deckEndpoint.getDeck(args),
   },
 };
