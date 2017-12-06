@@ -39,11 +39,7 @@ export const DeckQuery = gql`
     getDeck(deckId: $deckId) {
       title
       author
-      studySet {
-        front
-        back
-        hint
-      }
+      studySet
     }
   }
 `;

@@ -56,6 +56,33 @@ const twitterEndpoint = {
   },
 };
 
+const cardEndpoint = {
+  getCard(args) {
+    return promisify(callback =>
+      docClient.query(
+        {
+          TableName: 'cards',
+          KeyConditionExpression: 'cardId = :v1',
+          ExpressionAttributeValues: {
+            // ':v1': args.cardId,
+            ':v1': args.cardId,
+          },
+        },
+        callback
+      )
+    ).then(result => {
+      console.log(result);
+      const card = {
+        cardId: result.Items[0].cardId,
+        front: result.Items[0].front,
+        back: result.Items[0].back,
+        hint: result.Items[0].hint,
+      };
+      return card;
+    });
+  },
+};
+
 const deckEndpoint = {
   getDeck(args) {
     console.log('args', args);
@@ -79,7 +106,6 @@ const deckEndpoint = {
         author: result.Items[0].author,
         studySet: result.Items[0].studySet,
       };
-
       return deck;
     });
   },
@@ -90,5 +116,6 @@ export const resolvers = {
   Query: {
     getTwitterFeed: (root, args) => twitterEndpoint.getRawTweets(args),
     getDeck: (root, args) => deckEndpoint.getDeck(args),
+    getCard: (root, args) => cardEndpoint.getCard(args),
   },
 };

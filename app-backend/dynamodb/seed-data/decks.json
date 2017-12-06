@@ -3,88 +3,18 @@
     "deckId": "123",
     "title": "Keyboard Shortcuts",
     "author": "Just a dude",
-    "studySet": [
-      {
-        "front": "copy",
-        "back": "CTRL + c",
-        "hint": "The same letter as the action"
-      },
-      {
-        "front": "paste",
-        "back": "CTRL + p",
-        "hint": "You shouldn't eat paste!"
-      },
-      {
-        "front": "cut",
-        "back": "CTRL + x",
-        "hint": "___ marks the spot"
-      },
-      {
-        "front": "undo",
-        "back": "CTRL + z",
-        "hint": "Undo the last action with the last letter in alphabet"
-      },
-      {
-        "front": "select all",
-        "back": "CTRL + a",
-        "hint": "The first letter of all"
-      },
-      {
-        "front": "new tab",
-        "back": "CTRL + t",
-        "hint": "T...t...t...tab already"
-      }
-    ]
+    "studySet": [1, 2, 3, 4, 5, 6]
   },
   {
     "deckId": "456",
     "title": "EMC Trivia",
     "author": "Jake of all trades",
-    "studySet": [
-      {
-        "front":
-          "Imagine Brad in Iceland, what's he drinking and who is he drinking it with?",
-        "back": "Kombucha with Sigur Ros",
-        "hint": "Singing and laughing merrily"
-      },
-      {
-        "front":
-          "How much wood could a wood chuck, chuck if a wood chuck got too drunk?",
-        "back": "None. Woodchuck needs a nap.",
-        "hint": "I really have no idea either"
-      }
-    ]
+    "studySet": [7, 8]
   },
   {
     "deckId": "789",
     "title": "Fruits",
     "author": "Somebody Fruited",
-    "studySet": [
-      {
-        "front": "apple.jpg",
-        "back": "Apple",
-        "hint": "Johnny loves planting these."
-      },
-      {
-        "front": "banana.jpg",
-        "back": "Banana",
-        "hint": "Stop monkeying around!"
-      },
-      {
-        "front": "cranberry.jpg",
-        "back": "Cranberry",
-        "hint": "With enough suger, anything tastes great!"
-      },
-      {
-        "front": "durian.jpg",
-        "back": "Durian",
-        "hint": "Seriously, somebody's feet stink"
-      },
-      {
-        "front": "elderberry.jpg",
-        "back": "Elderberry",
-        "hint": "The oldest of the berries."
-      }
-    ]
+    "studySet": [9, 10, 11, 12, 13]
   }
 ]
