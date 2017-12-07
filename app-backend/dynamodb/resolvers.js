@@ -64,7 +64,6 @@ const cardEndpoint = {
           TableName: 'cards',
           KeyConditionExpression: 'cardId = :v1',
           ExpressionAttributeValues: {
-            // ':v1': args.cardId,
             ':v1': args.cardId,
           },
         },
@@ -97,17 +96,25 @@ const deckEndpoint = {
         },
         callback
       )
-    ).then(result => {
-      console.log('result', result);
+    )
+      .then(result => {
+        const cardSet = result.Items[0].studySet;
+        result.cardSet = cardSet;
+        console.log(result);
+        return result;
+      })
+      .then(result => {
+        console.log('result', result);
 
-      const deck = {
-        deckId: result.Items[0].deckId,
-        title: result.Items[0].title,
-        author: result.Items[0].author,
-        studySet: result.Items[0].studySet,
-      };
-      return deck;
-    });
+        const deck = {
+          deckId: result.Items[0].deckId,
+          title: result.Items[0].title,
+          author: result.Items[0].author,
+          studySet: result.Items[0].studySet,
+          cardSet: result.cardSet,
+        };
+        return deck;
+      });
   },
 };
 

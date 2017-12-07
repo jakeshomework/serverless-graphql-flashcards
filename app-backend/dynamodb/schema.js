@@ -7,6 +7,7 @@ type Deck {
   title: String! 
   author: String!
   studySet: [String]
+  cardSet: [String]
 }
 
 type Card {
