@@ -82,39 +82,85 @@ const cardEndpoint = {
   },
 };
 
-const deckEndpoint = {
-  getDeck(args) {
-    console.log('args', args);
+const cardSetEndpoint = {
+  getCardSet(args) {
     return promisify(callback =>
       docClient.query(
         {
-          TableName: 'decks-by-apollo',
-          KeyConditionExpression: 'deckId = :v1',
+          TableName: 'cards',
+          KeyConditionExpression: 'cardId = :v1',
           ExpressionAttributeValues: {
-            ':v1': args.deckId,
+            // ':v1': args.cardId,
+            ':v1': args,
           },
         },
         callback
       )
-    )
-      .then(result => {
-        const cardSet = result.Items[0].studySet;
-        result.cardSet = cardSet;
-        console.log(result);
-        return result;
-      })
-      .then(result => {
-        console.log('result', result);
+    ).then(result => {
+      console.log(result);
+      const cardSet = {
+        cardId: result.Items[0].cardId,
+        front: result.Items[0].front,
+        back: result.Items[0].back,
+        hint: result.Items[0].hint,
+      };
+      return cardSet;
+    });
+  },
+};
 
-        const deck = {
-          deckId: result.Items[0].deckId,
-          title: result.Items[0].title,
-          author: result.Items[0].author,
-          studySet: result.Items[0].studySet,
-          cardSet: result.cardSet,
-        };
-        return deck;
-      });
+const deckEndpoint = {
+  getDeck(args) {
+    console.log('args', args);
+    return (
+      promisify(callback =>
+        docClient.query(
+          {
+            TableName: 'decks-by-apollo',
+            KeyConditionExpression: 'deckId = :v1',
+            ExpressionAttributeValues: {
+              ':v1': args.deckId,
+            },
+          },
+          callback
+        )
+      )
+        // .then(result => {
+        //   const cardSet = result.Items[0].studySet.map(item =>
+        //     cardEndpoint.getCard(`cardId: ${item}`)
+        //   );
+        //   console.log('cardSet', cardSet);
+        //   return result;
+        // })
+
+        // .then(result => {
+        //   promisify(callback =>
+        //     docClient.query(
+        //       {
+        //         TableName: 'cards',
+        //         KeyConditionExpression: 'cardId = :v1',
+        //         ExpressionAttributeValues: {
+        //           // ':v1': args.cardId,
+        //           ':v1': args,
+        //         },
+        //       },
+        //       callback
+        //     )
+        //   );
+        // })
+        .then(result => {
+          console.log('result', result);
+
+          const deck = {
+            deckId: result.Items[0].deckId,
+            title: result.Items[0].title,
+            author: result.Items[0].author,
+            studySet: result.Items[0].studySet,
+            cardSet: [1, 2, 3, 4],
+          };
+          return deck;
+        })
+    );
   },
 };
 
