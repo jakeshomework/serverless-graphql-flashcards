@@ -58,9 +58,9 @@ const twitterEndpoint = {
 
 const cardEndpoint = {
   getCard(args) {
-    console.log('holy fruit', typeof args);
-    console.log('cardEndpoint', args);
-    console.log('bananas', args.cardId);
+    // console.log('holy fruit', typeof args);
+    // console.log('cardEndpoint', args);
+    // console.log('bananas', args.cardId);
     return promisify(callback =>
       docClient.query(
         {
@@ -75,62 +75,84 @@ const cardEndpoint = {
       )
     )
       .then(result => {
-        console.log('my card result', result);
         const card = {
           cardId: result.Items[0].cardId,
           front: result.Items[0].front,
           back: result.Items[0].back,
           hint: result.Items[0].hint,
         };
+        // console.log('current card', card);
         return card;
       })
       .catch(err => console.log('ERROR HERE', err));
   },
 };
 
-let cardSet = [];
+let deck = {};
+const cardSet = [];
 
 const deckEndpoint = {
   getDeck(args) {
     // console.log('args', args);
-    return promisify(callback =>
-      docClient.query(
-        {
-          TableName: 'decks-by-apollo',
-          KeyConditionExpression: 'deckId = :v1',
-          ExpressionAttributeValues: {
-            ':v1': args.deckId,
+    return (
+      promisify(callback =>
+        docClient.query(
+          {
+            TableName: 'decks-by-apollo',
+            KeyConditionExpression: 'deckId = :v1',
+            ExpressionAttributeValues: {
+              ':v1': args.deckId,
+            },
           },
-        },
-        callback
+          callback
+        )
       )
-    )
-      .then(result => {
-        console.log('cardSet', cardSet);
-        console.log('result', result);
+        .then(result => {
+          // console.log('cardSet', cardSet);
+          // console.log('result', result);
 
-        const deck = {
-          deckId: result.Items[0].deckId,
-          title: result.Items[0].title,
-          author: result.Items[0].author,
-          studySet: result.Items[0].studySet,
-          cardSet,
-        };
-        return deck;
-      })
-      .then(deck => {
-        console.log('first call to dynamodb', deck);
-        cardSet = deck.studySet.map(item =>
-          // cardEndpoint.getCard(`{cardId: '${item}'}`)
-          cardEndpoint.getCard({ cardId: item.toString() })
-        );
+          deck = {
+            deckId: result.Items[0].deckId,
+            title: result.Items[0].title,
+            author: result.Items[0].author,
+            studySet: result.Items[0].studySet,
+            cardSet,
+          };
+          return deck;
+        })
 
-        return deck;
-      })
-      .then(deck => {
-        deck.cardSet = cardSet;
-        return deck;
-      });
+        // /* ===== get the cards based on deck.studySet ===== */
+        // .then(deck => {
+        //   console.log('first call to dynamodb', deck);
+
+        //   cardSet = deck.studySet.map(item =>
+        //     cardEndpoint.getCard({ cardId: item.toString() })
+        //   );
+
+        //   return deck;
+        // })
+
+        /* ===== https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html ===== */
+        .then(currentDeck =>
+          Promise.all(
+            currentDeck.studySet.map(item =>
+              cardEndpoint.getCard({ cardId: item.toString() })
+            )
+          )
+        )
+        .then(
+          cardList =>
+            // console.log('did this work?', cardList);
+            cardList
+        )
+
+        /* ===== assign cardSet to deck ===== */
+        .then(cardList => {
+          deck.cardSet = cardList;
+          console.log('FINAL DECK:', deck);
+          return deck;
+        })
+    );
   },
 };
 
@@ -176,3 +198,48 @@ export const resolvers = {
 //     return cardSet;
 //   });
 // }
+
+/* =========== FOR STACK OVERFLOW ========== */
+
+// const promisify = foo =>
+//   new Promise((resolve, reject) => {
+//     foo((error, result) => {
+//       if (error) {
+//         reject(error);
+//       } else {
+//         resolve(result);
+//       }
+//     });
+//   });
+
+// function getCard(args) {
+//   return promisify(callback =>
+//     // console.log('cally bally', callback);
+//     docClient.query(
+//       {
+//         TableName: 'cards',
+//         KeyConditionExpression: 'cardId = :v1',
+//         ExpressionAttributeValues: {
+//           ':v1': args.cardId,
+//         },
+//       },
+//       callback
+//     )
+//   )
+//     .then(result => {
+//       const card = {
+//         cardId: result.Items[0].cardId,
+//         front: result.Items[0].front,
+//         back: result.Items[0].back,
+//         hint: result.Items[0].hint,
+//       };
+//       console.log('My Card Object--should be #1', card);
+//       return card;
+//     })
+//     .catch(err => console.log('ERROR', err));
+// }
+
+// const item = 5;
+// getCard({ cardId: item.toString() }).then(
+//   console.log('Finished--Should be #2')
+// );
