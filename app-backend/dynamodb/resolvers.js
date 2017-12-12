@@ -58,109 +58,76 @@ const twitterEndpoint = {
 
 const cardEndpoint = {
   getCard(args) {
+    console.log('holy fruit', typeof args);
+    console.log('cardEndpoint', args);
+    console.log('bananas', args.cardId);
     return promisify(callback =>
       docClient.query(
         {
           TableName: 'cards',
           KeyConditionExpression: 'cardId = :v1',
           ExpressionAttributeValues: {
+            // ':v1': '3',
             ':v1': args.cardId,
           },
         },
         callback
       )
-    ).then(result => {
-      console.log(result);
-      const card = {
-        cardId: result.Items[0].cardId,
-        front: result.Items[0].front,
-        back: result.Items[0].back,
-        hint: result.Items[0].hint,
-      };
-      return card;
-    });
+    )
+      .then(result => {
+        console.log('my card result', result);
+        const card = {
+          cardId: result.Items[0].cardId,
+          front: result.Items[0].front,
+          back: result.Items[0].back,
+          hint: result.Items[0].hint,
+        };
+        return card;
+      })
+      .catch(err => console.log('ERROR HERE', err));
   },
 };
 
-const cardSetEndpoint = {
-  getCardSet(args) {
+let cardSet = [];
+
+const deckEndpoint = {
+  getDeck(args) {
+    // console.log('args', args);
     return promisify(callback =>
       docClient.query(
         {
-          TableName: 'cards',
-          KeyConditionExpression: 'cardId = :v1',
+          TableName: 'decks-by-apollo',
+          KeyConditionExpression: 'deckId = :v1',
           ExpressionAttributeValues: {
-            // ':v1': args.cardId,
-            ':v1': args,
+            ':v1': args.deckId,
           },
         },
         callback
       )
-    ).then(result => {
-      console.log(result);
-      const cardSet = {
-        cardId: result.Items[0].cardId,
-        front: result.Items[0].front,
-        back: result.Items[0].back,
-        hint: result.Items[0].hint,
-      };
-      return cardSet;
-    });
-  },
-};
+    )
+      .then(result => {
+        console.log('first call to dynamodb', result);
+        cardSet = result.Items[0].studySet.map(item =>
+          // cardEndpoint.getCard(`{cardId: '${item}'}`)
+          cardEndpoint.getCard({ cardId: item.toString() })
+        );
 
-const deckEndpoint = {
-  getDeck(args) {
-    console.log('args', args);
-    return (
-      promisify(callback =>
-        docClient.query(
-          {
-            TableName: 'decks-by-apollo',
-            KeyConditionExpression: 'deckId = :v1',
-            ExpressionAttributeValues: {
-              ':v1': args.deckId,
-            },
-          },
-          callback
-        )
-      )
-        // .then(result => {
-        //   const cardSet = result.Items[0].studySet.map(item =>
-        //     cardEndpoint.getCard(`cardId: ${item}`)
-        //   );
-        //   console.log('cardSet', cardSet);
-        //   return result;
-        // })
+        return result;
+      })
 
-        // .then(result => {
-        //   promisify(callback =>
-        //     docClient.query(
-        //       {
-        //         TableName: 'cards',
-        //         KeyConditionExpression: 'cardId = :v1',
-        //         ExpressionAttributeValues: {
-        //           // ':v1': args.cardId,
-        //           ':v1': args,
-        //         },
-        //       },
-        //       callback
-        //     )
-        //   );
-        // })
-        .then(result => {
-          console.log('result', result);
+      .then(result => {
+        console.log('cardSet', cardSet);
+        console.log('result', result);
 
-          const deck = {
-            deckId: result.Items[0].deckId,
-            title: result.Items[0].title,
-            author: result.Items[0].author,
-            studySet: result.Items[0].studySet,
-            cardSet: [1, 2, 3, 4],
-          };
-          return deck;
-        })
-    );
+        const deck = {
+          deckId: result.Items[0].deckId,
+          title: result.Items[0].title,
+          author: result.Items[0].author,
+          studySet: result.Items[0].studySet,
+          cardSet: [1, 2, 3, 4],
+        };
+        return deck;
+      });
   },
 };
 
@@ -172,3 +139,37 @@ export const resolvers = {
     getCard: (root, args) => cardEndpoint.getCard(args),
   },
 };
+
+// function getCardSet(cardSetArray) {
+//   console.log('cardSetArray', cardSetArray);
+//   const cardSet = cardSetArray.map(item => {
+//     console.log(item);
+//     docClient.query(
+//       {
+//         TableName: 'cards',
+//         KeyConditionExpression: 'cardId = :v1',
+//         ExpressionAttributeValues: {
+//           // ':v1': args.cardId,
+//           ':v1': item,
+//         },
+//       },
+//       (err, data) => {
+//         if (err) console.log('ERROR HERE', err);
+//         else console.log(data);
+//       }
+//     );
+//     return 'hello';
+//   });
+// }
+
+//   ).then(result => {
+//     console.log(result);
+//     const cardSet = {
+//       cardId: result.Items[0].cardId,
+//       front: result.Items[0].front,
+//       back: result.Items[0].back,
+//       hint: result.Items[0].hint,
+//     };
+//     return cardSet;
+//   });
+// }
