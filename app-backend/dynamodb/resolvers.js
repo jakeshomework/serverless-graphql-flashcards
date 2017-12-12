@@ -106,16 +106,6 @@ const deckEndpoint = {
       )
     )
       .then(result => {
-        console.log('first call to dynamodb', result);
-        cardSet = result.Items[0].studySet.map(item =>
-          // cardEndpoint.getCard(`{cardId: '${item}'}`)
-          cardEndpoint.getCard({ cardId: item.toString() })
-        );
-
-        return result;
-      })
-
-      .then(result => {
         console.log('cardSet', cardSet);
         console.log('result', result);
 
@@ -124,8 +114,21 @@ const deckEndpoint = {
           title: result.Items[0].title,
           author: result.Items[0].author,
           studySet: result.Items[0].studySet,
-          cardSet: [1, 2, 3, 4],
+          cardSet,
         };
+        return deck;
+      })
+      .then(deck => {
+        console.log('first call to dynamodb', deck);
+        cardSet = deck.studySet.map(item =>
+          // cardEndpoint.getCard(`{cardId: '${item}'}`)
+          cardEndpoint.getCard({ cardId: item.toString() })
+        );
+
+        return deck;
+      })
+      .then(deck => {
+        deck.cardSet = cardSet;
         return deck;
       });
   },
