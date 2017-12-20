@@ -8,33 +8,55 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 console.log('Importing movies into DynamoDB. Please wait.');
 
-const allUsers = JSON.parse(fs.readFileSync('users.json', 'utf8'));
+const allDecks = JSON.parse(fs.readFileSync('decks.json', 'utf8'));
+const allCards = JSON.parse(fs.readFileSync('cards.json', 'utf8'));
 
-allUsers.forEach(function(user) {
+allDecks.forEach(deck => {
   const params = {
-    TableName: 'users',
+    TableName: 'decks',
     Item: {
-      name: user.name,
-      screen_name: user.screen_name,
-      location: user.location,
-      description: user.description,
-      followers_count: user.followers_count,
-      friends_count: user.friends_count,
-      favourites_count: user.favourites_count,
-      posts: user.posts,
+      deckId: deck.deckId,
+      title: deck.title,
+      author: deck.author,
+      studySet: deck.studySet,
     },
   };
 
-  docClient.put(params, function(err, data) {
+  docClient.put(params, (err, data) => {
     if (err) {
       console.error(
-        'Unable to add user',
-        user.name,
+        'Unable to add deck',
+        deck.deckId,
         '. Error JSON:',
         JSON.stringify(err, null, 2)
       );
     } else {
-      console.log('PutItem succeeded:', user.name);
+      console.log('PutItem succeeded:', deck.deckId);
+    }
+  });
+});
+
+allCards.forEach(card => {
+  const params = {
+    TableName: 'cards',
+    Item: {
+      cardId: card.cardId,
+      front: card.front,
+      back: card.back,
+      hint: card.hint,
+    },
+  };
+
+  docClient.put(params, (err, data) => {
+    if (err) {
+      console.error(
+        'Unable to add deck',
+        card.cardId,
+        '. Error JSON:',
+        JSON.stringify(err, null, 2)
+      );
+    } else {
+      console.log('PutItem succeeded:', card.cardId);
     }
   });
 });

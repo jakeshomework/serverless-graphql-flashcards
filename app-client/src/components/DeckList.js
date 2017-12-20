@@ -25,6 +25,7 @@ const DeckList = ({ data: { loading, error, getDeck } }) => {
         deckId={getDeck.deckId}
         studySet={getDeck.studySet}
         author={getDeck.author}
+        cardSet={getDeck.cardSet}
       />
     </div>
   );
@@ -40,6 +41,12 @@ export const DeckQuery = gql`
       title
       author
       studySet
+      cardSet {
+        cardId
+        front
+        back
+        hint
+      }
     }
   }
 `;

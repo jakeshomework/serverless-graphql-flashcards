@@ -17,7 +17,18 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:us-east-1:*:table/users"
+      Resource: "arn:aws:dynamodb:us-east-1:*:table/decks"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:BatchGetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-east-1:*:table/cards"
+      
 
 plugins:
   - serverless-webpack
@@ -37,7 +48,7 @@ custom:
     seed:
       test:
         sources:
-          - table: decks-by-apollo
+          - table: decks
             sources: [seed-data/decks.json]
           - table: cards
             sources: [seed-data/cards.json]
@@ -47,7 +58,7 @@ functions:
     handler: handler.graphqlHandler
     events:
     - http:
-        path: graphqls
+        path: graphql
         method: post
         cors: true
   playground:
@@ -91,7 +102,7 @@ resources:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
 
-        TableName: 'decks-by-apollo'
+        TableName: 'decks'
 
     CardsTable:
       Type: 'AWS::DynamoDB::Table'

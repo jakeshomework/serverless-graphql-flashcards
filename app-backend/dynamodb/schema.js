@@ -7,7 +7,7 @@ type Deck {
   title: String! 
   author: String!
   studySet: [String]
-  cardSet: [String]
+  cardSet: [Card]
 }
 
 type Card {
@@ -22,27 +22,16 @@ type User {
   email: String
 }
 
-type Tweets {   
-  name: String!
-  screen_name: String!
-  location: String!
-  description: String!
-  followers_count: Int!
-  friends_count: Int!
-  favourites_count: Int!
-  posts : [Tweet]
-}
-
-type Tweet {
-  tweet : String
-}
-
 type Query {
-  getTwitterFeed(handle: String!, consumer_key: String, consumer_secret: String) : Tweets
   getDeck(deckId: String!) : Deck
   getUser(userId: String!) : User
   getCard(cardId: String!) : Card
-}`;
+}
+
+type Mutation {
+    addCard(cardId: ID!, front: String, back: String, hint: String): Card
+}
+`;
 
 // eslint-disable-next-line import/prefer-default-export
 export { schema };
