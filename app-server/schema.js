@@ -29,7 +29,7 @@ type Query {
 }
 
 type Mutation {
-    addCard(cardId: ID!, front: String, back: String, hint: String): Card
+    addCard(cardId: String!, front: String, back: String, hint: String): Card!
 }
 `;
 

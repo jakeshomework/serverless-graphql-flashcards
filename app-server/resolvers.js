@@ -45,6 +45,33 @@ const cardEndpoint = {
       })
       .catch(err => console.log('ERROR HERE', err));
   },
+  addCard(card) {
+    const params = {
+      TableName: 'cards',
+      Item: {
+        cardId: card.cardId,
+        front: card.front,
+        back: card.back,
+        hint: card.hint,
+      },
+    };
+    console.log(card);
+
+    /* ----- PUT item with callback return -----*/
+    // docClient.put(params, (err, data) => {
+    //   if (err) console.log(err);
+    //   else console.log(data);
+    // });
+    // return card;
+
+    /* ----- PUT item with promise return -----*/
+    return promisify(callback => docClient.put(params, callback))
+      .then(result => {
+        console.log('SUCCESS ON PUT', card);
+        return card;
+      })
+      .catch(err => console.log('ERROR ON PUT', err));
+  },
 };
 
 let deck = {};
@@ -120,5 +147,8 @@ export const resolvers = {
   Query: {
     getDeck: (root, args) => deckEndpoint.getDeck(args),
     getCard: (root, args) => cardEndpoint.getCard(args),
+  },
+  Mutation: {
+    addCard: (root, args) => cardEndpoint.addCard(args),
   },
 };
