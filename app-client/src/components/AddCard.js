@@ -33,16 +33,36 @@ class AddCard extends Component {
     this.handleChange(field, { target: { value: value.format() } });
   }
 
-  handleSave = async e => {
+  // /* ----- compare advantages of handling this way -----*/
+  // handleSave = async e => {
+  //   e.stopPropagation();
+  //   e.preventDefault();
+
+  //   const { createEvent, history } = this.props;
+  //   const { card } = this.state;
+
+  //   await createEvent(card);
+
+  //   // history.push('/');
+  // };
+
+  _addCard = async e => {
+    /* what does this do? */
     e.stopPropagation();
+    /* what does this do? */
     e.preventDefault();
-
-    const { createEvent, history } = this.props;
-    const { card } = this.state;
-
-    await createEvent(card);
-
-    // history.push('/');
+    const { front, back, hint } = this.state.card;
+    const cardId = uuid();
+    console.log('front: ', front, ' -- back: ', back, ' -- hint: ', hint);
+    console.log('cardId: ', cardId);
+    await this.props.addCardMutation({
+      variables: {
+        front,
+        back,
+        hint,
+        cardId: cardId,
+      },
+    });
   };
 
   render() {
@@ -93,39 +113,9 @@ class AddCard extends Component {
       </div>
     );
   }
-
-  _addCard = async () => {
-    const { front, back, hint } = this.state.card;
-    const cardId = uuid();
-    console.log('front: ', front, ' -- back: ', back, ' -- hint: ', hint);
-    console.log('cardId: ', cardId);
-    await this.props.addCardMutation({
-      variables: {
-        front,
-        back,
-        hint,
-        cardId: cardId,
-      },
-    });
-  };
 }
 
-const ADD_CARD = gql(`
-mutation AddCardMutation($front: String! $back: String! $hint: String! $cardId: String!) {
-  addCard(
-    front: $front
-    back: $back
-    hint: $hint
-    cardId: $cardId
-  ) {
-    cardId
-    front
-    back
-    hint
-  }
-}`);
-
-export default graphql(ADD_CARD, { name: 'addCardMutation' })(AddCard);
+export default graphql(MutationAddCard, { name: 'addCardMutation' })(AddCard);
 
 // export default graphql(MutationAddCard, {
 //   options: {
