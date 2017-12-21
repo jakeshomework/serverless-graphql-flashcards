@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import AddCard from './AddCard';
 
 function Deck({ deckId, title, studySet, author, cardSet }) {
   return (
@@ -13,6 +14,7 @@ function Deck({ deckId, title, studySet, author, cardSet }) {
           front: {card.front} // back: {card.back}
         </div>
       ))}
+      <AddCard />
     </div>
   );
 }
