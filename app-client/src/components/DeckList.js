@@ -53,6 +53,7 @@ export const DeckQuery = gql`
 
 export default graphql(DeckQuery, {
   options: () => ({
+    fetchPolicy: 'cache-and-network',
     variables: {
       deckId: holyPath,
     },
