@@ -33,33 +33,28 @@ This example uses the following technologies:
 
 You need to have Node 6 or higher installed.
 
+Install Global Dependencies
 ```
 npm install -g serverless
 npm install -g yarn
 npm install -g netlify-cli
 ```
 
-Install Dependencies.
+Install Local Dependencies.
 ```
+cd app-client
 yarn install
 ```
 
 ## Quick Start (Serverless Offline)
-Please note: AWS CLI is required to be installed on your system
+Please note: AWS CLI is required to be installed on your system (see Setup for Production section below)
 
-1. **Select Backend** (Twitter Rest API or DynamoDB)
+1. **Start Backend** (DynamoDB)
 
-- *Twitter Rest API*
-    ```
-    cd app-backend/rest-api
-    yarn start
-    ```
-
-- *DynamoDB*
-    ```
-    cd app-backend/dynamodb
-    yarn start
-    ```
+```
+cd app-server
+yarn start
+```
 
 2. **Start FrontEnd**
 
@@ -70,6 +65,12 @@ yarn start
 
 3. **Start GraphQL Playground (GraphiQL replacement)**
 
+Download desktop client (.dmg for Mac, .exe for Windows) 
+[GraphQL Playground](https://github.com/graphcool/graphql-playground/releases)
+
+Use `http://localhost:4000/graphql` for local endpoint or enter a deployed endpoint.
+
+... browser-based endpoint is currently broken.
 ```
 http://localhost:4000/playground
 ```
@@ -82,26 +83,18 @@ Configure your AWS keys. Here you can find a [2min walkthrough](https://www.yout
 sls config credentials --provider aws --key <your_aws_access_key> --secret <your_aws_secret_key>
 ```
 
-
 You need to make sure you have access to your deployed lambda functions.
 
 1. **Select Backend** (Twitter Rest API or DynamoDB). Deploy Serverless Resources to your AWS Account
-- *Twitter Rest API*
-    ```
-    cd app-backend/rest-api
-    yarn deploy-prod
-    ```
 
-- *DynamoDB*
-    ```
-    cd app-backend/dynamodb
-    yarn deploy-prod
-    ```
+```
+cd app-backend/dynamodb
+yarn deploy-prod
+```
 
 2. **Config**: Get your /graphql POST endpoint as shown below and use it in config/security.env.prod
 
 ![deploy feedback](https://user-images.githubusercontent.com/1587005/32410402-351ff868-c17c-11e7-9bfb-e39f7e8c14a3.png)
-
 
 3. **Select Frontend** (AWS S3 or Netlify)
 
@@ -143,23 +136,45 @@ Note: Please note that backend is deployed before deploying frontend.
 
   - Your deployment url will be printed on the console
 
-## Example Query
+## Example Queries
 
-Introspection Query:
+- [Introspection Query](http://graphql.org/learn/introspection/) 
+Use these in the GraphQL Desktop Client
 
 ```
 {
-  __type(name: "Tweets") {
-    name
-    kind
-    fields{
-      name
-      type{
-        name
-        kind
-        ofType{
+  __schema {
+    queryType {
+      name 
+      kind
+      fields {
+        description
+        deprecationReason
+      }
+    }
+  }
+}
+```
+or dig deeper 
+```
+{
+  __schema {
+    queryType {
+      name 
+      kind
+      fields {
+        name 
+        description
+        deprecationReason
+        type {
           name
           kind
+          fields {
+            name
+            type {
+              kind
+            }
+          }
         }
       }
     }
@@ -167,25 +182,54 @@ Introspection Query:
 }
 ```
 
-Sample Query:
-
 note: consumer_key and consumer_secret are present in config/security.env.local
+
+[Queries & Mutations](http://graphql.org/learn/queries/)
+
+- Get One Card
 ```
 {
-  getTwitterFeed(handle:"sidg_sid", consumer_key:"xxx", consumer_secret:"xxx"){
-    name
-    screen_name
-    location
-    description
-    followers_count
-    friends_count
-    favourites_count
-    posts{
-      tweet
+  getCard(cardId:"13") {
+    front
+    back
+    hint
+  }
+}
+```
+
+- Get Full Deck 
+```
+{
+  getDeck(deckId: "789") {
+    deckId
+    author
+    title
+    studySet
+    cardSet {
+      front
+      back
+      hint
     }
   }
 }
 ```
+- Add Card
+```
+mutation {
+    addCard(
+      cardId: "35"
+      front:"Full 5"
+      back:"Back it 5"
+      hint:"Hither 5"
+    ){
+      cardId
+      front
+          back
+          hint
+    }
+}
+```
+
 
 ## Directory Layout
 
@@ -208,13 +252,6 @@ note: consumer_key and consumer_secret are present in config/security.env.local
 │   │   │   ├── /create_seed_data.js        # Create Seed data to be inserted in dynamodb local and remote
 │   │   │   ├── /insert_seed_Data_prod.js   # Insert seed data in aws dynamodb (serverless)
 │   │   │   ├── /sample-query.txt           # Test Query on DynamoDB Local Client http://localhost:8000
-│   │   ├── /handler.js                     # AWS Lambda - Apollo Lambda Server
-│   │   ├── /package.js                     # server side dependencies
-│   │   ├── /resolvers.js                   # graphql resolvers
-│   │   ├── /schema.js                      # graphql schema
-│   │   ├── /serverless.yml                 # Serverless yaml for AWS deployment
-│   │   ├── /webpack.config.js              # Webpack server side code with ES6
-│   ├── /rest-api
 │   │   ├── /handler.js                     # AWS Lambda - Apollo Lambda Server
 │   │   ├── /package.js                     # server side dependencies
 │   │   ├── /resolvers.js                   # graphql resolvers
