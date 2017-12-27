@@ -16,6 +16,25 @@ const promisify = foo =>
   });
 
 const cardEndpoint = {
+  getAllCards(args) {
+    console.log(args);
+    return promisify(callback =>
+      docClient.scan(
+        {
+          TableName: 'cards',
+          Limit: args.numCards,
+        },
+        callback
+      )
+    ).then(result => {
+      const cardList = {
+        cardSet: result.Items,
+      };
+      console.log('cardList', cardList);
+      return cardList;
+    });
+  },
+
   getCard(args) {
     // console.log('holy fruit', typeof args);
     // console.log('cardEndpoint', args);
@@ -72,12 +91,33 @@ const cardEndpoint = {
       })
       .catch(err => console.log('ERROR ON PUT', err));
   },
+  addCardToDeck(args) {
+    console.log(args);
+    return args;
+  },
 };
 
 let deck = {};
 const cardSet = [];
 
 const deckEndpoint = {
+  getAllDecks(args) {
+    return promisify(callback =>
+      docClient.scan(
+        {
+          TableName: 'decks',
+          Limit: args.numDecks,
+        },
+        callback
+      )
+    ).then(result => {
+      const deckList = {
+        deckSet: result.Items,
+      };
+      console.log('deckList', deckList);
+      return deckList;
+    });
+  },
   getDeck(args) {
     // console.log('args', args);
     return (
@@ -147,8 +187,11 @@ export const resolvers = {
   Query: {
     getDeck: (root, args) => deckEndpoint.getDeck(args),
     getCard: (root, args) => cardEndpoint.getCard(args),
+    getAllCards: (root, args) => cardEndpoint.getAllCards(args),
+    getAllDecks: (root, args) => deckEndpoint.getAllDecks(args),
   },
   Mutation: {
     addCard: (root, args) => cardEndpoint.addCard(args),
+    addCardToDeck: (root, args) => cardEndpoint.addCardToDeck(args),
   },
 };

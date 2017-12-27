@@ -213,6 +213,19 @@ note: consumer_key and consumer_secret are present in config/security.env.local
   }
 }
 ```
+
+- Get [Number] of Cards 
+```
+{
+  getAllCards(numCards: 5) {
+    cardSet {
+      front
+      back
+    }
+  }
+}
+```
+
 - Add Card
 ```
 mutation {
