@@ -3,6 +3,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import Deck from './Deck';
+import DeckQuery from '../GraphQL/QueryGetDeck';
 
 // ===== get deckId to fetch from URL path ===== //
 const holyPath = window.location.href.substr(
@@ -22,7 +23,7 @@ const DeckList = ({ data: { loading, error, getDeck } }) => {
       <Deck
         key={getDeck.deckId}
         title={getDeck.title}
-        deckId={getDeck.deckId}
+        deckId={holyPath}
         studySet={getDeck.studySet}
         author={getDeck.author}
         cardSet={getDeck.cardSet}
@@ -35,24 +36,9 @@ DeckList.propTypes = {
   data: PropTypes.any.isRequired, // eslint-disable-line
 };
 
-export const DeckQuery = gql`
-  query DeckQuery($deckId: String!) {
-    getDeck(deckId: $deckId) {
-      title
-      author
-      studySet
-      cardSet {
-        cardId
-        front
-        back
-        hint
-      }
-    }
-  }
-`;
-
 export default graphql(DeckQuery, {
   options: () => ({
+    // fetchPolicy: 'cache-and-network',
     fetchPolicy: 'cache-and-network',
     variables: {
       deckId: holyPath,

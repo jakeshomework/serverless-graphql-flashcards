@@ -92,8 +92,37 @@ const cardEndpoint = {
       .catch(err => console.log('ERROR ON PUT', err));
   },
   addCardToDeck(args) {
-    console.log(args);
-    return args;
+    return promisify(callback =>
+      docClient.query(
+        {
+          TableName: 'decks',
+          KeyConditionExpression: 'deckId = :v1',
+          ExpressionAttributeValues: {
+            ':v1': args.deckId,
+          },
+        },
+        callback
+      )
+    )
+      .then(result => {
+        /* ----- TODO: convert to ES6 spread operator -----*/
+        const newDeck = result.Items[0];
+        newDeck.studySet.push(args.cardId);
+        return newDeck;
+      })
+      .then(newDeck => {
+        const params = {
+          TableName: 'decks',
+          Item: newDeck,
+        };
+
+        return promisify(callback => docClient.put(params, callback))
+          .then(result => {
+            console.log('DECK UPDATED', newDeck);
+            return newDeck;
+          })
+          .catch(err => console.log('ERROR ON DECK UPDATE', err));
+      });
   },
 };
 

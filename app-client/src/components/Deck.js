@@ -14,7 +14,7 @@ function Deck({ deckId, title, studySet, author, cardSet }) {
           front: {card.front} // back: {card.back}
         </div>
       ))}
-      <AddCard />
+      <AddCard deckId={deckId} />
     </div>
   );
 }

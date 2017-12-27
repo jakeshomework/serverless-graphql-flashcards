@@ -4,9 +4,12 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 import { v4 as uuid } from 'uuid';
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
+
 // import QueryAllEvents from '../GraphQL/QueryAllEvents';
 import MutationAddCard from '../GraphQL/MutationAddCard';
+import MutationAddCardToDeck from '../GraphQL/MutationAddCardToDeck';
+
 import QueryGetDeck from '../GraphQL/QueryGetDeck';
 import gql from 'graphql-tag';
 
@@ -33,19 +36,6 @@ class AddCard extends Component {
     this.handleChange(field, { target: { value: value.format() } });
   }
 
-  // /* ----- compare advantages of handling this way -----*/
-  // handleSave = async e => {
-  //   e.stopPropagation();
-  //   e.preventDefault();
-
-  //   const { createEvent, history } = this.props;
-  //   const { card } = this.state;
-
-  //   await createEvent(card);
-
-  //   // history.push('/');
-  // };
-
   _addCard = async e => {
     /* what does this do? */
     e.stopPropagation();
@@ -60,6 +50,12 @@ class AddCard extends Component {
         front,
         back,
         hint,
+        cardId: cardId,
+      },
+    });
+    await this.props.addCardToDeckMutation({
+      variables: {
+        deckId: this.props.deckId.toString(),
         cardId: cardId,
       },
     });
@@ -115,7 +111,12 @@ class AddCard extends Component {
   }
 }
 
-export default graphql(MutationAddCard, { name: 'addCardMutation' })(AddCard);
+// export default graphql(MutationAddCard, { name: 'addCardMutation' })(AddCard);
+
+export default compose(
+  graphql(MutationAddCard, { name: 'addCardMutation' }),
+  graphql(MutationAddCardToDeck, { name: 'addCardToDeckMutation' })
+)(AddCard);
 
 // export default graphql(MutationAddCard, {
 //   options: {

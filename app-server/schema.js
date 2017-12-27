@@ -40,7 +40,7 @@ type Query {
 
 type Mutation {
     addCard(cardId: String!, front: String, back: String, hint: String): Card!
-    addCardToDeck(cardId: String!, deckId: String!): Card! 
+    addCardToDeck(cardId: String!, deckId: String!): Deck! 
 }
 `;
 
